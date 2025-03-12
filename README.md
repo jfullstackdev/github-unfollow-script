@@ -13,21 +13,18 @@ To run the script in GitHub Codespaces:
    - Otherwise, open any other Codespace.
      Create a new file named `unfollow.js` and paste the JavaScript code into it.
 3. Open a terminal in Codespaces (View > Terminal).
-4. in the terminal, to install the Octokit library, run
+4. Replace `'your_username'` and `'your_token_with_correct_permission'` in the
+   script with your actual GitHub username and personal access token.
+   - Get the correct token with the necessary permissions here:   
+     https://github.com/settings/tokens/new?scopes=user:follow&description=Unfollow+Script+Token
+5. in the terminal, to install the Octokit library, run
     ```
     npm install @octokit/rest
     ```
-5. run the script with 
+6. run the script with 
     ```
     node unfollow.js
     ```
-
-Remember to replace `'your_username'` and `'your_token_with_correct_permission'` in the script 
-with your actual GitHub username and personal access token.
-
-This is the exact URL for the correct permissions ready for you:
-
-https://github.com/settings/tokens/new?scopes=user:follow&description=Unfollow+Script+Token
 
 I tested it in one run, up to 4K it can scan 
 but will take few minutes, so better be sure you have stable connection
