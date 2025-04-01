@@ -1,31 +1,50 @@
 (async () => {
   const { Octokit } = await import("@octokit/rest");
 
-  // create a personal access token at https://github.com/settings/tokens/new?scopes=user:follow&description=Unfollow+Script+Token
   const octokit = new Octokit({ auth: `your_token_with_correct_permission` });
+
+  async function getPaginatedList(endpoint, params, limit) {
+    const perPage = 100;
+    let allItems = [];
+    let page = 1;
+
+    while (allItems.length < limit) {
+      const currentPage = await octokit.rest.users[endpoint]({
+        ...params,
+        per_page: perPage,
+        page: page,
+      });
+
+      allItems = allItems.concat(currentPage.data);
+
+      if (currentPage.data.length < perPage || allItems.length >= limit) {
+        break;
+      }
+
+      page++;
+    }
+
+    return allItems.slice(0, limit);
+  }
 
   async function unfollowNonFollowers() {
     const username = 'your_username';
 
-    // Get list of users who are following you
     const followers = await octokit.paginate(octokit.rest.users.listFollowersForUser, { username });
-    const followerLogins = followers.map(user => user.login);
+    const followerLogins = new Set(followers.map(user => user.login));
 
-    // Get list of users you are following
-    const following = await octokit.paginate(octokit.rest.users.listFollowingForUser, { username });
-    const followingLogins = following.map(user => user.login);
+    const following = await getPaginatedList('listFollowingForUser', { username }, 1000);
 
     let unfollowedCount = 0;
 
-    // Unfollow users who are not following you
-    for (const user of followingLogins) {
-      if (!followerLogins.includes(user)) {
-        await octokit.rest.users.unfollow({ username: user });
+    for (const user of following) {
+      if (!followerLogins.has(user.login)) {
+        console.log(`unfollowing: ${user.login}`);
+        await octokit.rest.users.unfollow({ username: user.login });
         unfollowedCount++;
       }
     }
 
-    // Log the total number of unfollowed users
     console.log(`unfollowed ${unfollowedCount} users`);
   }
 
