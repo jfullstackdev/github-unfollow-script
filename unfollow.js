@@ -1,52 +1,48 @@
 (async () => {
   const { Octokit } = await import("@octokit/rest");
-
   const octokit = new Octokit({ auth: `your_token_with_correct_permission` });
 
-  async function getPaginatedList(endpoint, params, limit) {
-    const perPage = 100;
-    let allItems = [];
-    let page = 1;
+  const username = 'your_username';
+  const limit = 1000;
 
-    while (allItems.length < limit) {
-      const currentPage = await octokit.rest.users[endpoint]({
-        ...params,
-        per_page: perPage,
-        page: page,
-      });
+  const userInfo = await octokit.rest.users.getByUsername({ username });
+  const totalFollowing = userInfo.data.following;
+  const totalPages = Math.ceil(totalFollowing / 100);
 
-      allItems = allItems.concat(currentPage.data);
+  const pagesToFetch = Math.min(Math.ceil(limit / 100), totalPages);
 
-      if (currentPage.data.length < perPage || allItems.length >= limit) {
-        break;
-      }
-
-      page++;
+  function getRandomPageNumbers(count, maxPage) {
+    const set = new Set();
+    while (set.size < count) {
+      const rand = Math.floor(Math.random() * maxPage) + 1;
+      set.add(rand);
     }
-
-    return allItems.slice(0, limit);
+    return Array.from(set);
   }
 
-  async function unfollowNonFollowers() {
-    const username = 'your_username';
+  const randomPages = getRandomPageNumbers(pagesToFetch, totalPages);
 
-    const followers = await octokit.paginate(octokit.rest.users.listFollowersForUser, { username });
-    const followerLogins = new Set(followers.map(user => user.login));
-
-    const following = await getPaginatedList('listFollowingForUser', { username }, 1000);
-
-    let unfollowedCount = 0;
-
-    for (const user of following) {
-      if (!followerLogins.has(user.login)) {
-        console.log(`unfollowing: ${user.login}`);
-        await octokit.rest.users.unfollow({ username: user.login });
-        unfollowedCount++;
-      }
-    }
-
-    console.log(`unfollowed ${unfollowedCount} users`);
+  const following = [];
+  for (const page of randomPages) {
+    const res = await octokit.rest.users.listFollowingForUser({
+      username,
+      per_page: 100,
+      page,
+    });
+    following.push(...res.data);
   }
 
-  unfollowNonFollowers().catch(console.error);
+  const followers = await octokit.paginate(octokit.rest.users.listFollowersForUser, { username });
+  const followerSet = new Set(followers.map(f => f.login));
+
+  let unfollowed = 0;
+  for (const user of following) {
+    if (!followerSet.has(user.login)) {
+      console.log(`unfollowing: ${user.login}`);
+      await octokit.rest.users.unfollow({ username: user.login });
+      unfollowed++;
+    }
+  }
+
+  console.log(`✅ unfollowed ${unfollowed} non-followers from a subset of ${limit}`);
 })();
