@@ -19,7 +19,7 @@ To run the script in GitHub Codespaces:
      https://github.com/settings/tokens/new?scopes=user:follow&description=Unfollow+Script+Token
 5. in the terminal, to install the Octokit library, run
     ```
-    npm install @octokit/rest
+    npm install
     ```
 6. run the script with 
     ```
