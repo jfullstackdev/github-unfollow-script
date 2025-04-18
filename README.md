@@ -21,6 +21,7 @@ To run the script in GitHub Codespaces:
     ```
     npm install
     ```
+   note: if you're using GitHub Codespaces, this step may have already been run automatically
 6. run the script with 
     ```
     node unfollow.js
