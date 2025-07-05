@@ -1,9 +1,21 @@
 (async () => {
   const { Octokit } = await import("@octokit/rest");
-  const octokit = new Octokit({ auth: `your_token_with_correct_permission` });
+  // Read credentials from environment variables
+  const username = process.env.GITHUB_USERNAME;
+  const token = process.env.GITHUB_TOKEN;
+  // Allow limit to be set via environment variable or default to 1000
+  const limit = process.env.LIMIT ? parseInt(process.env.LIMIT, 10) : 1000;
 
-  const username = 'your_username';
-  const limit = 1000;
+  if (!username || !token) {
+    console.error("Error: GITHUB_USERNAME and GITHUB_TOKEN must be set as environment variables.");
+    process.exit(1);
+  }
+  if (isNaN(limit) || limit <= 0) {
+    console.error("Error: LIMIT must be a positive integer if set.");
+    process.exit(1);
+  }
+
+  const octokit = new Octokit({ auth: token });
 
   const userInfo = await octokit.rest.users.getByUsername({ username });
   const totalFollowing = userInfo.data.following;
