@@ -27,6 +27,33 @@ To run the script in GitHub Codespaces:
     node unfollow.js
     ```
 
-I tested it in one run, up to 4K it can scan 
-but will take few minutes, so better be sure you have stable connection
-and I did not hit the rate limit that time. Enjoy !
+## USE CASE
+
+I tested it in one run—up to 4K users can be scanned, but it will take a
+few minutes. Make sure you have a stable connection, and I did not hit
+the rate limit during my tests. Enjoy!
+
+You can safely process your following list in chunks (for example,
+2,500 users at a time, running the script 4 times, or increasing the
+limit to 10,000 to ensure none are left). This approach helps ensure
+all non-followers are eventually unfollowed while keeping each run
+fast and manageable.
+
+This script is optimized for accounts with up to **25,000 following**
+and **25,000 followers** (about 50,000 users total). It is safe and
+efficient for these sizes on most modern systems.
+
+**Recommended usage for best performance:**
+- For faster runs and to avoid long waits, process your following list
+  in chunks (e.g., 2,500–10,000 users per run).
+- You can re-run the script multiple times with different random
+  samples to ensure all non-followers are eventually unfollowed.
+- Example: Run with a limit of 2,500 users, four times, or increase
+  the limit to 10,000 for broader coverage per run.
+
+**Note:**
+- For much larger accounts (over 50,000 following or followers),
+  consider using a more advanced version with persistent storage or
+  batching.
+- Always monitor for GitHub API rate limits if processing very large
+  lists.
