@@ -24,8 +24,15 @@ To run the script in GitHub Codespaces:
    note: if you're using GitHub Codespaces, this step may have already been run automatically
 6. run the script with 
     ```
-    node unfollow.js
+    SCRIPT_USERNAME=your_username SCRIPT_TOKEN=your_token SCRIPT_LIMIT=2500 node unfollow.js
     ```
+    (Change SCRIPT_LIMIT to your desired subset size. If not set, defaults to 1000.)
+
+**Note:**
+- The above one-line command works in Codespaces, as I tested it myself.
+- On local Windows (Command Prompt or PowerShell), this command might not work as shown. 
+If you are on Windows and encounter issues, it is highly 
+encouraged to use GitHub Codespaces for a seamless experience.
 
 ## USE CASE
 
